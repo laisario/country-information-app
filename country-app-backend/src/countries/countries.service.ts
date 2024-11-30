@@ -25,7 +25,10 @@ export class CountriesService {
 
       const countryInfo = countryInfoResponse.data;
       const countryBorders = countryInfo.borders.map(
-        (country) => country.commonName,
+        (country) => ({
+          country: country.commonName,
+          code: country.countryCode,
+        }),
       );
 
       const populationResponse = await this.httpService
