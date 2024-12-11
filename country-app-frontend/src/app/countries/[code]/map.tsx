@@ -1,45 +1,19 @@
 "use client"
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import "leaflet/dist/leaflet.css"
-import * as topojson from "topojson-client"
 import { useRouter } from 'next/navigation'
+import { TCountryInformation } from '@/types'
 
-function getFeatureCentroid(geometry) {
-    if (geometry.type === "Polygon") {
-        return calculateCentroid(geometry.coordinates[0]);
-    } else if (geometry.type === "MultiPolygon") {
-        const allCoordinates = geometry.coordinates.flatMap(polygon => polygon[0]);
-        return calculateCentroid(allCoordinates);
-    }
-    return [0, 0]; // Default fallback
-}
-
-function calculateCentroid(coordinates) {
-    let totalX = 0, totalY = 0, totalArea = 0;
-
-    for (let i = 0; i < coordinates.length - 1; i++) {
-        const [x1, y1] = coordinates[i];
-        const [x2, y2] = coordinates[i + 1];
-
-        const a = x1 * y2 - x2 * y1;
-        totalX += (x1 + x2) * a;
-        totalY += (y1 + y2) * a;
-        totalArea += a;
-    }
-
-    totalArea *= 0.5;
-    const centroidX = totalX / (6 * totalArea);
-    const centroidY = totalY / (6 * totalArea);
-
-    return [centroidX, centroidY];
+interface MapProps {
+    country: TCountryInformation | null;
 }
 
 
-function Map({ country }) {
+function Map({ country }: MapProps) {
     const [geoJson, setGeoJson] = useState(null)
     const router = useRouter()
-    const [countryCenter, setCountryCenter] = useState<[number, number]|null>(null); // Default center
+    const [countryCenter, setCountryCenter] = useState<[number, number] | null>(null); // Default center
 
     useEffect(() => {
         fetch(`https://restcountries.com/v3.1/alpha/${country?.code}`)
@@ -55,8 +29,8 @@ function Map({ country }) {
         const selectedBorders = country?.borders?.map(border => border?.code)
 
         layer.setStyle({
-            fillColor: selectedBorders.includes(countryCode) ? "blue" : country?.code === countryCode ? "red" : "grey",
-            fillOpacity: selectedBorders.includes(countryCode) ? 0.5 : country?.code === countryCode ? 0.5 : 0.2,
+            fillColor: selectedBorders?.includes(countryCode) ? "blue" : country?.code === countryCode ? "red" : "grey",
+            fillOpacity: selectedBorders?.includes(countryCode) ? 0.5 : country?.code === countryCode ? 0.5 : 0.2,
             color: 'black',
             weight: 1,
         })

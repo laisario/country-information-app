@@ -10,10 +10,11 @@ export const useCountryInformation = (code: string) => {
     useEffect(() => {
       const fetchCountryDetails = async () => {
         try {
-          const res = await axios.get(`http://localhost:3000/countries/${code}`)
+          const res = await axios.get(`http://localhost:4000/countries/${code}`)
           const coutryInfo = res?.data
           setCountry(coutryInfo);
         } catch (err) {
+          console.log(err)
           setError('Fail retrieve country information :(');
         } finally {
           setLoading(false);

@@ -9,10 +9,11 @@ export const useCountries = () => {
 
     const fetchCountries = async () => {
         try {
-            const res = await axios.get('http://localhost:3000/countries/');
+            const res = await axios.get('http://localhost:4000/countries/');
             const countriesData = res.data
             setCountries(countriesData);
         } catch (err) {
+            console.log(err)
             setError('Country request failure :(');
         } finally {
             setLoading(false);
